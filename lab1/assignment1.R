@@ -1,9 +1,11 @@
 data = read.csv("spambase.csv", header=TRUE, sep=";", dec=",")
+data[,ncol(data)] = as.factor(data[,ncol(data)])
 n=dim(data)[1]#Kollar antal rows
 set.seed(12345)#för samma resultat varje körning
 id=sample(1:n, floor(n*0.5))#sample väljer ut från element 1:n, floor rundar ned
 train=data[id,]
 test=data[-id,]
+
 
 knearest=function(data,k,newdata) {
   
@@ -51,23 +53,50 @@ print(cm5)
 print(mcr)
 
 #function for step 3 and 4
-step34func=function(data,k,newdata,p) {
-  probvalues <- knearest(data,k,newdata)
-  ct = table(probvalues>p,newdata[,ncol(newdata)])
-  mcr = 1 - sum(diag(ct))/sum(ct)
+# step34func=function(data,k,newdata,p) {
+#   probvalues <- knearest(data,k,newdata)
+#   ct = table(probvalues>p,newdata[,ncol(newdata)])
+#   mcr = 1 - sum(diag(ct))/sum(ct)
+#   return(list(CT=ct,MCR=mcr))
+# }
+
+step34func = function(data,k,newdata) {
+  probvals <- knearest(data,k,newdata)
+  classify <- round(probvals)
+  ct <- table(classify,test[,ncol(test)]) #contingency table
+  mcr <- 1 - sum(diag(ct))/sum(ct) #misclassification rate
   return(list(CT=ct,MCR=mcr))
 }
 
 #step3
-step34func(train,5,test,0.5)
+step34func(train,5,test)
 
 #step4
-step34func(train,1,test,0.5)
+step34func(train,1,test)
 
-library(kknn)
-fit.kknn <- kknn(Spam~.,train,test,k=5)
-probvals <- fit.kknn$prob
+#step5
+# step5func=function(data,k,newdata,p){
+#   predkknn <- kknn(Spam~.,train,test,k=k)
+#   probkknn <-predkknn$prob[,1]
+#   ct = table(probkknn>p,test[,ncol(test)])
+#   mcr = 1 - sum(diag(ct)/sum(ct))
+#   return(list(CT=ct,MCR=mcr))
+# }
 
+step5func=function(data,k,newdata) {
+  predkknn <- kknn(Spam~.,train,test,k=k)
+  probvals <- predkknn$prob[,2]
+  classify <- round(probvals)
+  ct <- table(classify,test[,ncol(test)]) #contingency table
+  mcr <- 1 - sum(diag(ct))/sum(ct) #misclassification rate
+  return(list(CT=ct,MCR=mcr))
+}
+step5func(train,5,test)
+
+#step6
+pi = seq(0.05, 0.95, 0.05)
+probsknear <- knearest(train,5,test)
+probskknn <- kknn(Spam~.,train,test,k=5)$prob[,2]
 #Y=vector with true info if spam/not spam
 #Yfit=vector with probability values for the data
 #p=classification threshold-vector? pi
@@ -82,3 +111,5 @@ ROC=function(Y, Yfit, p){
   }
   return (list(TPR=TPR,FPR=FPR))
 }
+
+debugonce(ROC)
