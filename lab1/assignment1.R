@@ -1,5 +1,5 @@
 data = read.csv("spambase.csv", header=TRUE, sep=";", dec=",")
-data[,ncol(data)] = as.factor(data[,ncol(data)])
+#data[,ncol(data)] = as.factor(data[,ncol(data)])
 n=dim(data)[1]#Kollar antal rows
 set.seed(12345)#för samma resultat varje körning
 id=sample(1:n, floor(n*0.5))#sample väljer ut från element 1:n, floor rundar ned
@@ -45,12 +45,12 @@ knearest=function(data,k,newdata) {
 #debugonce(knearest)
 
 #Step 3
-k5<-knearest(train,5,test)
-kc5 <- round(k5) # classify 1 if >0.5 else 0
-cm5 <- table(kc5,test[,ncol(test)]) #contingency table
-mcr <- 1 - sum(diag(cm5))/sum(cm5) #misclassification rate
-print(cm5)
-print(mcr)
+# k5<-knearest(train,5,test)
+# kc5 <- round(k5) # classify 1 if >0.5 else 0
+# cm5 <- table(kc5,test[,ncol(test)]) #contingency table
+# mcr <- 1 - sum(diag(cm5))/sum(cm5) #misclassification rate
+# print(cm5)
+# print(mcr)
 
 #function for step 3 and 4
 # step34func=function(data,k,newdata,p) {
@@ -84,19 +84,30 @@ step34func(train,1,test)
 # }
 
 step5func=function(data,k,newdata) {
-  predkknn <- kknn(Spam~.,train,test,k=k)
+  data[,ncol(data)] = as.factor(data[,ncol(data)])
+  newdata[,ncol(newdata)] = as.factor(newdata[,ncol(newdata)])
+  predkknn <- kknn(Spam~.,data,newdata,k=k)
   probvals <- predkknn$prob[,2]
   classify <- round(probvals)
   ct <- table(classify,test[,ncol(test)]) #contingency table
   mcr <- 1 - sum(diag(ct))/sum(ct) #misclassification rate
   return(list(CT=ct,MCR=mcr))
 }
+#debugonce(step5func)
 step5func(train,5,test)
 
 #step6
 pi = seq(0.05, 0.95, 0.05)
+
 probsknear <- knearest(train,5,test)
-probskknn <- kknn(Spam~.,train,test,k=5)$prob[,2]
+
+traindata <- train
+testdata <- test
+traindata[,ncol(traindata)] = as.factor(traindata[,ncol(traindata)])
+testdata[,ncol(testdata)] = as.factor(testdata[,ncol(testdata)])
+probskknn <- kknn(Spam~.,traindata,testdata,k=5)$prob[,2]
+
+targets <- c(test[,ncol(test)])
 #Y=vector with true info if spam/not spam
 #Yfit=vector with probability values for the data
 #p=classification threshold-vector? pi
@@ -106,10 +117,20 @@ ROC=function(Y, Yfit, p){
   FPR=numeric(m)
   for(i in 1:m){
     t=table(Yfit>p[i], Y)
-    TPR[i]=#insert formula for TPR
-    FPR[i]=#insert formula for FPR
+    TP=t[2,2]
+    Npos=sum(t[,2])
+    FP=t[1,1]
+    Nneg=sum(t[,1])
+    TPR[i]=TP/Npos#insert formula for TPR
+    FPR[i]=FP/Nneg#insert formula for FPR
   }
   return (list(TPR=TPR,FPR=FPR))
 }
 
-debugonce(ROC)
+#debugonce(ROC)
+ROCknear <- ROC(targets,probsknear,pi)
+ROCkknn <- ROC(targets,probskknn,pi)
+
+plot(ROCknear$FPR, ROCknear$TPR, type="l", xlim=c(0,1), ylim=c(0,1), xlab="FPR", ylab="TPR", col="blue")
+lines(ROCkknn$FPR, ROCkknn$TPR, col="red")
+legend(x = "bottomright", c("knearest", "kknn"), lty = c(1,1), lwd = c(1,1), col=c("blue", "Red"))
