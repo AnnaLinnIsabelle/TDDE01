@@ -13,9 +13,6 @@ loglikelihood <- function(x, theta){
   return (sum(logp))
 }
 
-#debugonce(loglikelihood)
-loglikelihood(data,2)
-
 theta = seq(0, 10, by=0.01)
 
 
@@ -49,15 +46,21 @@ prior <- function(theta){
 }
 
 l <- function(x,theta){
-  return (log(expdist(x,theta)*prior(theta)))
+  return (log(prod(expdist(x,theta))*prior(theta)))
 }
 
 lres <- numeric(length(theta))
-for (i in 1:length(theta)) {
+for (i in 1:length(theta)){
   lres[i] <- l(data,theta[i])
 }
+max2 <- which.max(lres)
+maxlikelihoodval3 <- theta[max2]
 
 plot(theta,lres)
-
 #step5
 gen <-rexp(50,1.13)
+
+p1 <- hist(data$Length)
+p2 <- hist(gen)
+plot( p1, col=rgb(0,0,1,1/8), xlim=c(0,6), ylim=c(0,30))
+plot( p2, col=rgb(1,0,0,1/8), xlim=c(0,6), add=T)
