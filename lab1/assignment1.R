@@ -83,6 +83,8 @@ step34func(train,1,test)
 #   return(list(CT=ct,MCR=mcr))
 # }
 
+library(kknn)
+
 step5func=function(data,k,newdata) {
   data[,ncol(data)] = as.factor(data[,ncol(data)])
   newdata[,ncol(newdata)] = as.factor(newdata[,ncol(newdata)])
@@ -119,7 +121,7 @@ ROC=function(Y, Yfit, p){
     t=table(Yfit>p[i], Y)
     TP=t[2,2]
     Npos=sum(t[,2])
-    FP=t[1,1]
+    FP=t[2,1]
     Nneg=sum(t[,1])
     TPR[i]=TP/Npos#insert formula for TPR
     FPR[i]=FP/Nneg#insert formula for FPR
@@ -127,7 +129,7 @@ ROC=function(Y, Yfit, p){
   return (list(TPR=TPR,FPR=FPR))
 }
 
-#debugonce(ROC)
+
 ROCknear <- ROC(targets,probsknear,pi)
 ROCkknn <- ROC(targets,probskknn,pi)
 
