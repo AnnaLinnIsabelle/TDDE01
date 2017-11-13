@@ -1,14 +1,14 @@
-#step1
-data = read.csv("tecator.csv", header=TRUE, sep=";", dec=",")#import data
-set.seed(12345)#för samma resultat varje körning
+####Step 1####
+data = read.csv("tecator.csv", header=TRUE, sep=";", dec=",")
+set.seed(12345)
 
 plot(data$Moisture, data$Protein)
 
-#step2
+####Step 2####
 
-#step3
-n=dim(data)[1]#Kollar antal rows
-id=sample(1:n, floor(n*0.5))#sample väljer ut från element 1:n, floor rundar ned
+####Step 3####
+n=dim(data)[1]
+id=sample(1:n, floor(n*0.5))
 train=data[id,]
 test=data[-id,]
 
@@ -23,28 +23,33 @@ for (i in 1:6) {
 }
 
 i=seq(1,6,1)
-plot(i,MSE.train, type="l", col="red", ylim=c(30,40))
+plot(i,MSE.train, type="l", col="red", ylim=c(30,40), ylab="MSE")
 lines(i, MSE.test, col="blue")
-legend(x = "bottomright", c("training data", "test data"), lty = c(1,1), lwd = c(1,1), col=c("Red", "Blue"))
+legend(x = "topright", c("training data", "test data"), lty = c(1,1), lwd = c(1,1), col=c("Red", "Blue"))
 
 
-#step4
-subset <- data[,2:101]
+####Step 4####
+subset <- data[,2:101] #only channel1-channel100
 data.lm <- lm(data$Fat ~ ., subset)
 library(MASS)
 stepAIC <- stepAIC(data.lm, trace=FALSE)
+print(list(numberOfVars=length(stepAIC$coefficients)))
 
-#step5
+####Step 5####
 library(glmnet)
 ridgefit <- glmnet(as.matrix(subset), data$Fat, alpha=0, family="gaussian")
 plot(ridgefit, xvar="lambda", label=TRUE)
 
-#step6
+####Step 6####
 lassofit <- glmnet(as.matrix(subset), data$Fat, alpha=1, family="gaussian")
 plot(lassofit, xvar="lambda", label=TRUE)
 
-#step7
+####Step 7####
 lassoCV <- cv.glmnet(as.matrix(subset), data$Fat, alpha=1, family="gaussian", lambda=seq(0,7,0.1))
 plot(lassoCV$lambda, lassoCV$cvm, type="l", col="blue")
+#plot(lassoCV)
 
-lassoCV2 <- cvFit(lassofit, y=subset$Fat, data=subset, K=10)
+lambdamin <- lassoCV$lambda.min
+
+
+

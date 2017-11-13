@@ -1,8 +1,8 @@
-#step1
+####Step 1####
 data = read.csv("machines.csv", header=TRUE, sep=";", dec=",")#import data
 set.seed(12345)#för samma resultat varje körning
 
-#step2
+####Step 2####
 expdist <- function(x, theta){
   return (theta * (exp(-theta*x)))
 }
@@ -15,7 +15,7 @@ loglikelihood <- function(x, theta){
 
 theta = seq(0, 10, by=0.01)
 
-
+#Function computin the log-likelihoods for a given vector x and a given vector theta
 loglikes <- function(x, theta) {
   loglikeli <- numeric(length(theta))
   for (i in 1:length(theta)) {
@@ -24,22 +24,24 @@ loglikes <- function(x, theta) {
   return (loglikeli)
 }
 
-vector1=loglikes(data, theta)
+logLikelihood=loglikes(data, theta)
 
-plot(theta, vector1, ylim=c(-250,0), type="l",col="red")
-max <- which.max(vector1)
+plot(theta, logLikelihood, ylim=c(-250,0), type="l",col="red")
+max <- which.max(logLikelihood)
 maxlikelihoodval <- theta[max]
+print(maxlikelihoodval)
 
-#step3
+####Step 3####
 data6first <- head(data)
-vector2=loglikes(data6first, theta)
+vector2=loglikes(data6first, theta)#log-likelihood values
 lines(theta, vector2, col="blue")
 legend(x = "bottomright", c("all obs", "6 first"), lty = c(1,1), lwd = c(1,1), col=c("red", "blue"))
 
 max <- which.max(vector2)
 maxlikelihoodval2 <- theta[max]
+print(maxlikelihoodval2)
 
-#step4
+####Step 4####
 prior <- function(theta){
   lambda=10
   return (lambda*exp(-lambda*theta))
@@ -55,12 +57,15 @@ for (i in 1:length(theta)){
 }
 max2 <- which.max(lres)
 maxlikelihoodval3 <- theta[max2]
+print(maxlikelihoodval3)
 
-plot(theta,lres)
-#step5
+plot(theta,lres,ylab="l(theta)", type="l", col="blue")
+
+####Step 5####
 gen <-rexp(50,1.13)
 
 p1 <- hist(data$Length)
 p2 <- hist(gen)
 plot( p1, col=rgb(0,0,1,1/8), xlim=c(0,6), ylim=c(0,30))
 plot( p2, col=rgb(1,0,0,1/8), xlim=c(0,6), add=T)
+legend(x="topright",c("old obs", "new obs"),lty=c(1,1),lwd=c(3,3),col=c(rgb(0,0,1,1/8),rgb(1,0,0,1/8)))

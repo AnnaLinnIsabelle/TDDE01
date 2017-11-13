@@ -1,18 +1,18 @@
+####Step 1####
 data = read.csv("spambase.csv", header=TRUE, sep=";", dec=",")
-#data[,ncol(data)] = as.factor(data[,ncol(data)])
-n=dim(data)[1]#Kollar antal rows
-set.seed(12345)#för samma resultat varje körning
-id=sample(1:n, floor(n*0.5))#sample väljer ut från element 1:n, floor rundar ned
+n=dim(data)[1]
+set.seed(12345)
+id=sample(1:n, floor(n*0.5))
 train=data[id,]
 test=data[-id,]
 
-
+####Step 2####
 knearest=function(data,k,newdata) {
   
   n1=dim(data)[1]
   n2=dim(newdata)[1]
   p=dim(data)[2]
-  Prob=numeric(n2)#vector av längd n2 som är numerisk. väredn 0
+  Prob=numeric(n2)
   X=as.matrix(data[,-p])
   Xn=as.matrix(newdata[-p])
   X=X/matrix(sqrt(rowSums(X^2)), nrow=n1, ncol=p-1)
@@ -43,22 +43,9 @@ knearest=function(data,k,newdata) {
   return(Prob)
 }
 #debugonce(knearest)
+dm <- knearest(train,5,test)#test run knearest
 
-#Step 3
-# k5<-knearest(train,5,test)
-# kc5 <- round(k5) # classify 1 if >0.5 else 0
-# cm5 <- table(kc5,test[,ncol(test)]) #contingency table
-# mcr <- 1 - sum(diag(cm5))/sum(cm5) #misclassification rate
-# print(cm5)
-# print(mcr)
-
-#function for step 3 and 4
-# step34func=function(data,k,newdata,p) {
-#   probvalues <- knearest(data,k,newdata)
-#   ct = table(probvalues>p,newdata[,ncol(newdata)])
-#   mcr = 1 - sum(diag(ct))/sum(ct)
-#   return(list(CT=ct,MCR=mcr))
-# }
+####Step 3####
 
 step34func = function(data,k,newdata) {
   probvals <- knearest(data,k,newdata)
@@ -68,21 +55,12 @@ step34func = function(data,k,newdata) {
   return(list(CT=ct,MCR=mcr))
 }
 
-#step3
 step34func(train,5,test)
 
-#step4
+####Step 4####
 step34func(train,1,test)
 
-#step5
-# step5func=function(data,k,newdata,p){
-#   predkknn <- kknn(Spam~.,train,test,k=k)
-#   probkknn <-predkknn$prob[,1]
-#   ct = table(probkknn>p,test[,ncol(test)])
-#   mcr = 1 - sum(diag(ct)/sum(ct))
-#   return(list(CT=ct,MCR=mcr))
-# }
-
+####Step 5####
 library(kknn)
 
 step5func=function(data,k,newdata) {
@@ -98,7 +76,7 @@ step5func=function(data,k,newdata) {
 #debugonce(step5func)
 step5func(train,5,test)
 
-#step6
+####Step 6####
 pi = seq(0.05, 0.95, 0.05)
 
 probsknear <- knearest(train,5,test)
@@ -112,7 +90,7 @@ probskknn <- kknn(Spam~.,traindata,testdata,k=5)$prob[,2]
 targets <- c(test[,ncol(test)])
 #Y=vector with true info if spam/not spam
 #Yfit=vector with probability values for the data
-#p=classification threshold-vector? pi
+#p=classification threshold-vector, pi
 ROC=function(Y, Yfit, p){
   m=length(p)
   TPR=numeric(m)
@@ -123,8 +101,8 @@ ROC=function(Y, Yfit, p){
     Npos=sum(t[,2])
     FP=t[2,1]
     Nneg=sum(t[,1])
-    TPR[i]=TP/Npos#insert formula for TPR
-    FPR[i]=FP/Nneg#insert formula for FPR
+    TPR[i]=TP/Npos#formula for TPR
+    FPR[i]=FP/Nneg#formula for FPR
   }
   return (list(TPR=TPR,FPR=FPR))
 }
