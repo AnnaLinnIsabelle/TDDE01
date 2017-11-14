@@ -46,8 +46,7 @@ plot(lassofit, xvar="lambda", label=TRUE)
 
 ####Step 7####
 lassoCV <- cv.glmnet(as.matrix(subset), data$Fat, alpha=1, family="gaussian", lambda=seq(0,7,0.1))
-plot(lassoCV$lambda, lassoCV$cvm, type="l", col="blue")
-#plot(lassoCV)
+plot(lassoCV)
 
 lambdamin <- lassoCV$lambda.min
 

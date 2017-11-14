@@ -1,6 +1,6 @@
 ####Step 1####
-data = read.csv("machines.csv", header=TRUE, sep=";", dec=",")#import data
-set.seed(12345)#för samma resultat varje körning
+data = read.csv("machines.csv", header=TRUE, sep=";", dec=",")
+set.seed(12345)
 
 ####Step 2####
 expdist <- function(x, theta){
@@ -15,7 +15,7 @@ loglikelihood <- function(x, theta){
 
 theta = seq(0, 10, by=0.01)
 
-#Function computin the log-likelihoods for a given vector x and a given vector theta
+#Function computing the log-likelihoods for a given vector x and a given vector theta
 loglikes <- function(x, theta) {
   loglikeli <- numeric(length(theta))
   for (i in 1:length(theta)) {
@@ -64,8 +64,8 @@ plot(theta,lres,ylab="l(theta)", type="l", col="blue")
 ####Step 5####
 gen <-rexp(50,1.13)
 
-p1 <- hist(data$Length)
-p2 <- hist(gen)
+p1 <- hist(data$Length, breaks=14)
+p2 <- hist(gen, breaks=14)
 plot( p1, col=rgb(0,0,1,1/8), xlim=c(0,6), ylim=c(0,30))
 plot( p2, col=rgb(1,0,0,1/8), xlim=c(0,6), add=T)
 legend(x="topright",c("old obs", "new obs"),lty=c(1,1),lwd=c(3,3),col=c(rgb(0,0,1,1/8),rgb(1,0,0,1/8)))

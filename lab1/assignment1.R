@@ -25,15 +25,18 @@ knearest=function(data,k,newdata) {
   C=X%*%t(Xn)
   #iv)
   D=matrix(1,nrow(C),ncol(C)) - C
+
+  #MISSING: use the computed distance matrix to find 
+  #which observations are the nearest neighbors to case #i  
   for (i in 1:n2 ){
-#MISSING: use the computed distance matrix to find 
-    #which observations are the nearest neighbors to case #i
-    kn<-which.min(D[,i])
-    if (k>1){
-      for (j in 2:k){
-        kn<-c(kn,which.min(D[-kn,i]))
-      }
-    }
+    # kn<-which.min(D[,i])
+    # if (k>1){
+    #   for (j in 2:k){
+    #     kn<-c(kn,which.min(D[-kn,i]))
+    #   }
+    # }
+    kn <- order(D[,i])[1:k]
+    
     
 #MISSING: derive probability value 'Prob[i]' by using the
     #target values of the nearest neighbors
