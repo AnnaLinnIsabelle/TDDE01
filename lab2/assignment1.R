@@ -1,4 +1,5 @@
 #ASSIGNMENT 1.2
+data = read.csv("australian-crabs.csv", header=TRUE, sep=",", dec=".")
 
 disc_fun=function(label, S){
 X1=X[Y==label,]
