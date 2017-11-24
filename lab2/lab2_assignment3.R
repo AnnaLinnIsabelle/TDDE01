@@ -38,3 +38,5 @@ lines(ordered_data$MET, Yfit, col="red")
 lines(ordered_data$MET, e$point[2,], col="blue")
 lines(ordered_data$MET, e$point[1,], col="green")
 
+####Step 4####
+
