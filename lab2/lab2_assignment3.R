@@ -39,4 +39,19 @@ lines(ordered_data$MET, e$point[2,], col="blue")
 lines(ordered_data$MET, e$point[1,], col="green")
 
 ####Step 4####
+rng = function(data, mle) {
+  D = data.frame(MET=data$MET, EX=data$EX)
+  n = length(data$EX)
+  #Generate new EX
+  D$EX = rnorm(n, predict(mle, newdata=D), mle$residuals)
+  return(D)
+}
 
+f4 = function(D){
+  res = tree(EX~MET, data=D) #fit tree model
+  #predict values for all MET values from the original data
+  EXpred = predict(res, newdata=ordered_data)
+  return(EXpred)
+}
+
+res4 = boot(ordered_data, statistic=f4, R=1000, mle=fit, ran.gen=rng, sim="parametric")
