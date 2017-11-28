@@ -9,6 +9,8 @@ library(tree)
 nobs=dim(ordered_data)[1]
 control <- tree.control(nobs=nobs, minsize=8)
 fit <- tree(EX~MET, data=ordered_data, control=control)
+cv.tree <- cv.tree(fit)#prunar fram en bra size
+pruned_tree <- #pruna med sizen från cv.tree
 Yfit <- predict(fit, newdata = ordered_data)
 points(ordered_data$MET, Yfit, col="red")
 fit.sum <- summary(fit)

@@ -41,5 +41,5 @@ library(pls)
 set.seed(12345)
 pcr_model = pcr(Viscosity~., data=spectra, scale=TRUE, validation="CV")
 summary(pcr_model)
-validationplot(pcr_model, val.type="RMSEP")
+validationplot(pcr_model, val.type="RMSEP") #root mean squared error
 which.min(pcr_model$validation$PRESS)
