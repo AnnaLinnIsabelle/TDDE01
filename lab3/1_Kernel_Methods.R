@@ -65,3 +65,10 @@ for (i in 1:length(times)) {
 }
 
 plot(minTimes, temp, xlab="minuites since midnight", type="o")
+
+for (i in 1:length(times)) {
+  k3 <- gaussianKernel(dist_time(times[i], filtered_st$time), h_time)
+  
+  temp[i] <-  sum((k1 * k2 * k3)*filtered_st$air_temperature) / sum(k1*k2*k3)
+}
+plot(minTimes, temp, xlab="minuites since midnight", type="o")

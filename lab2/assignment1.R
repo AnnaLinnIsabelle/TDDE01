@@ -1,5 +1,10 @@
 #ASSIGNMENT 1.2
-data = read.csv("australian-crabs.csv", header=TRUE, sep=",", dec=".")
+crabs = read.csv("australian-crabs.csv", header=TRUE, sep=",", dec=".")
+
+####Step 1####
+plot(crabs$CL,crabs$RW, col=c('red','blue')[crabs$sex])
+legend(x='bottomright', legend=levels(crabs$sex), col=c('red','blue'), pch=1)
+
 
 disc_fun=function(label, S){
 X1=X[Y==label,]
