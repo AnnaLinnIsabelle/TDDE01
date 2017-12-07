@@ -42,13 +42,11 @@ h_distance <- sd(distHaversine(c(0,0), cbind(filtered_st$longitude, filtered_st$
 h_date <- sd(dist_date(as.Date("2000-01-01"), filtered_st$date))
 h_time <- sd(dist_time(strptime("00:00:00", "%H:%M:%S"), filtered_st$time))
 
-
 # General formula for Gaussian Kernel
 gaussianKernel <- function(xDiff, h) {
   u <- xDiff/h
   return (exp(-(u)^2)) 
 }
-
 
 # Prediction with summation of kernels
 k1 <- gaussianKernel(distHaversine(c(b,a), cbind(filtered_st$longitude, filtered_st$latitude)), h_distance)
@@ -74,7 +72,6 @@ col <- rbPal(10)[as.numeric(cut(geo_distances,breaks = 40))]
 
 plot(times, temp, type="o", ylim=c(min(temp)-8,max(temp)+8), main="Comparison to training data k1+k2+k3", col="red")
 points(close_date$time, close_date$air_temperature, col=col)
-
 
 # Prediction with multiplication of kernels
 for (i in 1:length(times)) {
