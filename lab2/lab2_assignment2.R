@@ -85,16 +85,14 @@ print (list(CM=tab_test, MCR=mcr_test))
 naive_pred_train <- predict(fit_nb, newdata = training, type="raw")
 naive_pred_test <- predict(fit_nb, newdata = test, type="raw")
 
-# set prediction bad to true if the probability that it is bad is 
-# 10 times bigger than the prediction that it is good
-naive_pred_train[,1] = (naive_pred_train[,1]/naive_pred_train[,2] >10)
-naive_pred_train[,2] = (1 - naive_pred_train[,1])
+# set prediction bad to true if the probability that it is good is 
+# 10 times bigger than the prediction that it is bad
+naive_pred_train <- (naive_pred_train[,2]/naive_pred_train[,1]) >10
+naive_pred_test <- (naive_pred_test[,2]/naive_pred_test[,1]) >10
 
-naive_pred_test[,1] = (naive_pred_test[,1]/naive_pred_test[,2] >10)
-naive_pred_test[,2] = (1 - naive_pred_test[,1])
-#confusion matrices where 0 is predicted bad and 1 is predicted good
-cm_train <- table(naive_pred_train[,2], training$good_bad)
-cm_test <- table(naive_pred_test[,2], test$good_bad)
+#confusion matrices where FALSE is predicted bad and TRUE is predicted good
+cm_train <- table(True=training$good_bad, naive_pred_train)
+cm_test <- table(True=test$good_bad, naive_pred_test)
 print(list(TRAIN=cm_train, TEST=cm_test))
 
 mcr_train_lossm <- 1-sum(diag(cm_train))/sum(cm_train)
