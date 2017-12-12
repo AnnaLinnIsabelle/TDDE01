@@ -87,8 +87,8 @@ naive_pred_test <- predict(fit_nb, newdata = test, type="raw")
 
 # set prediction bad to true if the probability that it is good is 
 # 10 times bigger than the prediction that it is bad
-naive_pred_train <- (naive_pred_train[,2]/naive_pred_train[,1]) >10
-naive_pred_test <- (naive_pred_test[,2]/naive_pred_test[,1]) >10
+naive_pred_train <- ifelse((naive_pred_train[,2]/naive_pred_train[,1]) >10, "good", "bad")
+naive_pred_test <- ifelse((naive_pred_test[,2]/naive_pred_test[,1]) >10, "good", "bad")
 
 #confusion matrices where FALSE is predicted bad and TRUE is predicted good
 cm_train <- table(True=training$good_bad, naive_pred_train)
